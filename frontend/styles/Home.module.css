@@ -1,0 +1,44 @@
+.container {
+  min-height: 100vh;
+  padding: 0 2rem;
+}
+
+.header {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.uploadSection {
+  background: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.chatSection {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.documentInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #e9f7ef;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}

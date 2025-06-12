@@ -1,50 +1,89 @@
 import React, { useState } from 'react';
-
-interface Message {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
-  sources?: any[];
-}
-
+import styles from '../styles/ChatInterface.module.css';
+import { ChatMessage } from '../types/chat';
 interface ChatInterfaceProps {
-  // TODO: Define props interface
+  messages: ChatMessage[];
+  onSendMessage: (message: string) => Promise<void>;
+  placeholder?: string;
+  isLoading?: boolean;
 }
 
-export default function ChatInterface(props: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+export default function ChatInterface({
+  messages,
+  onSendMessage,
+  placeholder = "Type your message...",
+  isLoading = false
+}: ChatInterfaceProps) {
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async () => {
-    // TODO: Implement message sending
-    // 1. Add user message to chat
-    // 2. Send request to backend API
-    // 3. Add assistant response to chat
-    // 4. Handle loading states and errors
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: Handle input changes
+    if (!input.trim() || isLoading) return;
+    await onSendMessage(input);
+    setInput('');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    // TODO: Handle enter key press
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
-    <div className="chat-interface">
-      {/* TODO: Implement chat interface UI */}
-      
-      {/* Messages display area */}
-      <div className="messages">
-        {/* TODO: Render messages */}
+    <div className={styles.container}>
+      <div className={styles.messages}>
+        {messages.map((message) => (
+          <div 
+            key={message.id} 
+            className={`${styles.message} ${styles[message.type]}`}
+          >
+            <div className={styles.messageContent}>
+              {message.content}
+            </div>
+            {message.sources && message.sources.length > 0 && (
+              <div className={styles.sources}>
+                <strong>Sources:</strong>
+                <ul>
+                  {message.sources.map((source, index) => (
+                    <li key={index}>
+                      {source.title || source.url}
+                      {source.page && ` (page ${source.page})`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ))}
+        {isLoading && (
+          <div className={`${styles.message} ${styles.assistant}`}>
+            <div className={`${styles.messageContent} ${styles.typingIndicator}`}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Input area */}
-      <div className="input-area">
-        {/* TODO: Implement input field and send button */}
+      <div className={styles.inputArea}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={placeholder}
+          disabled={isLoading}
+          className={styles.input}
+        />
+        <button 
+          onClick={handleSendMessage}
+          disabled={!input.trim() || isLoading}
+          className={styles.button}
+        >
+          {isLoading ? 'Sending...' : 'Send'}
+        </button>
       </div>
     </div>
   );
-} 
+}
